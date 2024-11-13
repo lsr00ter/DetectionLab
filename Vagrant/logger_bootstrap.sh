@@ -35,11 +35,11 @@ echo "apt-fast apt-fast/dlflag boolean true" | debconf-set-selections
 apt_install_prerequisites() {
   echo "[$(date +%H:%M:%S)]: Adding apt repositories..."
   # Add repository for apt-fast
-  add-apt-repository -y -n ppa:apt-fast/stable 
+  add-apt-repository -y -n ppa:apt-fast/stable
   # Add repository for yq
-  add-apt-repository -y -n ppa:rmescandon/yq 
+  add-apt-repository -y -n ppa:rmescandon/yq
   # Add repository for suricata
-  add-apt-repository -y -n ppa:oisf/suricata-stable 
+  add-apt-repository -y -n ppa:oisf/suricata-stable
   # Install prerequisites and useful tools
   echo "[$(date +%H:%M:%S)]: Running apt-get clean..."
   apt-get clean
@@ -177,16 +177,16 @@ install_splunk() {
     /opt/splunk/bin/splunk add index threathunting -auth 'admin:changeme'
     /opt/splunk/bin/splunk add index evtx_attack_samples -auth 'admin:changeme'
     /opt/splunk/bin/splunk add index msexchange -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_forwarder/splunk-add-on-for-microsoft-windows_700.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_900.tgz -auth 'admin:changeme'
     /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-sysmon_1062.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/asn-lookup-generator_110.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/lookup-file-editor_331.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/asn-lookup-generator_121.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-app-for-lookup-file-editing_404.tgz -auth 'admin:changeme'
     /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-zeek-aka-bro_400.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/force-directed-app-for-splunk_200.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/punchcard-custom-visualization_130.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/sankey-diagram-custom-visualization_130.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/link-analysis-app-for-splunk_161.tgz -auth 'admin:changeme'
-    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/threathunting_1492.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/force-directed-app-for-splunk_310.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/punchcard-custom-visualization_150.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-sankey-diagram-custom-visualization_160.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/link-analysis-app-for-splunk_163.tgz -auth 'admin:changeme'
+    /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/threathunting_151.tgz -auth 'admin:changeme'
 
     # Fix ASNGen App - https://github.com/doksu/TA-asngen/issues/18#issuecomment-685691630
     echo 'python.version = python2' >>/opt/splunk/etc/apps/TA-asngen/default/commands.conf
@@ -381,7 +381,7 @@ install_zeek() {
   if ! grep 'zeek' /etc/apt/sources.list.d/security:zeek.list &> /dev/null; then
     sh -c "echo 'deb http://download.opensuse.org/repositories/security:/zeek/xUbuntu_20.04/ /' > /etc/apt/sources.list.d/security:zeek.list"
   fi
-  wget -nv https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key -O /tmp/Release.key 
+  wget -nv https://download.opensuse.org/repositories/security:zeek/xUbuntu_20.04/Release.key -O /tmp/Release.key
   apt-key add - </tmp/Release.key &>/dev/null
   # Update APT repositories
   apt-get -qq -ym update
@@ -412,9 +412,9 @@ install_zeek() {
   redef Intel::read_files += {
     "/opt/zeek/etc/intel.dat"
   };
-  
+
   redef ignore_checksums = T;
-  
+
   ' >>/opt/zeek/share/zeek/site/local.zeek
 
   # Configure Zeek

@@ -15,7 +15,7 @@ provider "esxi" {
 #  ESXI Guest resource
 #########################################
 resource "esxi_guest" "logger" {
-  guest_name = "logger"
+  guest_name = "DetectionLab-logger"
   disk_store = var.esxi_datastore
   guestos    = "ubuntu-64"
 
@@ -25,7 +25,7 @@ resource "esxi_guest" "logger" {
   numvcpus           = "2"
   resource_pool_name = "/"
   power              = "on"
-  clone_from_vm = "Ubuntu2004"
+  clone_from_vm = "DetectionTpl-Ubuntu2004"
 
     provisioner "remote-exec" {
     inline = [
@@ -54,7 +54,7 @@ resource "esxi_guest" "logger" {
     mac_address     = "00:50:56:a3:b1:c4"
     nic_type        = "e1000"
   }
-  # OPTIONAL: Uncomment out this interface stanza if your vm_network doesn't 
+  # OPTIONAL: Uncomment out this interface stanza if your vm_network doesn't
   # provide internet access
   # network_interfaces {
   #  virtual_network = var.nat_network
@@ -66,7 +66,7 @@ resource "esxi_guest" "logger" {
 }
 
 resource "esxi_guest" "dc" {
-  guest_name = "dc"
+  guest_name = "DetectionLab-dc"
   disk_store = var.esxi_datastore
   guestos    = "windows9srv-64"
 
@@ -76,7 +76,7 @@ resource "esxi_guest" "dc" {
   numvcpus           = "2"
   resource_pool_name = "/"
   power              = "on"
-  clone_from_vm = "WindowsServer2016"
+  clone_from_vm = "DetectionTpl-WindowsServer2016"
   # This is the network that bridges your host machine with the ESXi VM
   network_interfaces {
     virtual_network = var.vm_network
@@ -94,7 +94,7 @@ resource "esxi_guest" "dc" {
 }
 
 resource "esxi_guest" "wef" {
-  guest_name = "wef"
+  guest_name = "DetectionLab-wef"
   disk_store = var.esxi_datastore
   guestos    = "windows9srv-64"
 
@@ -104,7 +104,7 @@ resource "esxi_guest" "wef" {
   numvcpus           = "2"
   resource_pool_name = "/"
   power              = "on"
-  clone_from_vm = "WindowsServer2016"
+  clone_from_vm = "DetectionTpl-WindowsServer2016"
   # This is the network that bridges your host machine with the ESXi VM
   network_interfaces {
     virtual_network = var.vm_network
@@ -122,7 +122,7 @@ resource "esxi_guest" "wef" {
 }
 
 resource "esxi_guest" "win10" {
-  guest_name = "win10"
+  guest_name = "DetectionLab-win10"
   disk_store = var.esxi_datastore
   guestos    = "windows9-64"
 
@@ -132,7 +132,7 @@ resource "esxi_guest" "win10" {
   numvcpus           = "2"
   resource_pool_name = "/"
   power              = "on"
-  clone_from_vm = "Windows10"
+  clone_from_vm = "DetectionTpl-Windows10"
   # This is the network that bridges your host machine with the ESXi VM
   network_interfaces {
     virtual_network = var.vm_network

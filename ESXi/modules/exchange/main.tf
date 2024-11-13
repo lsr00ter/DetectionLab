@@ -1,15 +1,15 @@
-terraform {     
-  required_version = ">= 0.13"                                                                                                                                                                                                    
-  required_providers {                                                                                                                                                                                              
-    esxi = {                                                                                                                                                                                                        
-      source = "josenk/esxi"                                                                                                                                                                                        
-      version = "1.8.2"                                                                                                                                                                                             
+terraform {
+  required_version = ">= 0.13"
+  required_providers {
+    esxi = {
+      source = "josenk/esxi"
+      version = "1.8.2"
     }
   }
 }
 
 resource "esxi_guest" "exchange" {
-  guest_name = "exchange"
+  guest_name = "DetectionLab-exchange"
   disk_store = var.disk_store
   guestos    = "windows9srv-64"
 
@@ -19,7 +19,7 @@ resource "esxi_guest" "exchange" {
   numvcpus           = "4"
   resource_pool_name = "/"
   power              = "on"
-  clone_from_vm = "WindowsServer2016"
+  clone_from_vm = "DetectionTpl-WindowsServer2016"
   # This is the network that bridges your host machine with the ESXi VM
   network_interfaces {
     virtual_network = var.vm_network

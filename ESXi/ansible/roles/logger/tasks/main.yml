@@ -1,22 +1,21 @@
 ---
-
 - name: Set hostname to logger
   hostname:
     name: logger
-  become: yes
+  become: true
 
 - name: Create a directory if it does not exist
   file:
     path: /vagrant
     state: directory
-    mode: '0755'
-  become: yes
+    mode: "0755"
+  become: true
 
 - name: Copy vagrant resources
   synchronize:
     src: ../../Vagrant/resources
     dest: /vagrant/
-  become: yes
+  become: true
 
 - name: Copy bootstrap file
   copy:
@@ -35,11 +34,11 @@
 
 - name: Copy the netplan file over as root
   shell: "mv /tmp/01-netcfg.yaml /etc/netplan/01-netcfg.yaml"
-  become: yes
+  become: true
 
 - name: Apply the new netplan
   shell: netplan apply
-  become: yes
+  become: true
 
 - name: Add APT Repositories
   apt_repository:
@@ -48,28 +47,28 @@
     - "ppa:apt-fast/stable"
     - "ppa:rmescandon/yq"
     - "ppa:oisf/suricata-stable"
-  become: yes
+  become: true
 
 - name: Install apt-fast
-  become: yes
+  become: true
   apt:
     name: apt-fast
     update_cache: yes
 
 - name: Install tools via apt-fast
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
-      echo "[$(date +%H:%M:%S)]: Running apt-fast install..."
-      apt-fast -qq install -y jq whois build-essential git mysql-server redis-server python3-pip unzip htop yq libcairo2-dev libjpeg-turbo8-dev libpng-dev libtool-bin libossp-uuid-dev libavcodec-dev libavutil-dev libswscale-dev freerdp2-dev libpango1.0-dev libssh2-1-dev libvncserver-dev libtelnet-dev libssl-dev libvorbis-dev libwebp-dev tomcat9 tomcat9-admin tomcat9-user tomcat9-common
+    echo "[$(date +%H:%M:%S)]: Running apt-fast install..."
+    apt-fast -qq install -y jq whois build-essential git mysql-server redis-server python3-pip unzip htop yq libcairo2-dev libjpeg-turbo8-dev libpng-dev libtool-bin libossp-uuid-dev libavcodec-dev libavutil-dev libswscale-dev freerdp2-dev libpango1.0-dev libssh2-1-dev libvncserver-dev libtelnet-dev libssl-dev libvorbis-dev libwebp-dev tomcat9 tomcat9-admin tomcat9-user tomcat9-common
   register: apt_install_prerequisites
   failed_when: "'error' in apt_install_prerequisites.stderr"
 
 - name: Update the MOTD
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     echo "[$(date +%H:%M:%S)]: Updating the MOTD..."
     # Force color terminal
@@ -84,9 +83,9 @@
   failed_when: "'error' in modify_motd.stderr"
 
 - name: Test Prerequisites
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     for package in jq whois build-essential git unzip yq mysql-server redis-server python3-pip; do
       echo "[$(date +%H:%M:%S)]: [TEST] Validating that $package is correctly installed..."
@@ -108,14 +107,14 @@
   failed_when: "'error' in test_prerequisites.stderr"
 
 - name: Fix Static IPs
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     USING_KVM=$(sudo lsmod | grep kvm)
     if [ ! -z "$USING_KVM" ]; then
       echo "[*] Using KVM, no need to fix DHCP for eth1 iface"
-      exit 0 
+      exit 0
     fi
     if [ -f /sys/class/net/eth2/address ]; then
       if [ "$(cat /sys/class/net/eth2/address)" == "00:50:56:a3:b1:c4" ]; then
@@ -158,9 +157,9 @@
   changed_when: "'Using ESXi' in fix_eth1_static_ip.stdout"
 
 - name: Install Splunk
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   environment:
     MAXMIND_LICENSE: ""
     BASE64_ENCODED_SPLUNK_LICENSE: ""
@@ -215,23 +214,24 @@
       /opt/splunk/bin/splunk add index threathunting -auth 'admin:changeme'
       /opt/splunk/bin/splunk add index evtx_attack_samples -auth 'admin:changeme'
       /opt/splunk/bin/splunk add index msexchange -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_forwarder/splunk-add-on-for-microsoft-windows_700.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_900.tgz -auth 'admin:changeme'
       /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-sysmon_1062.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/asn-lookup-generator_110.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/lookup-file-editor_331.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/asn-lookup-generator_121.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-app-for-lookup-file-editing_404.tgz -auth 'admin:changeme'
       /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-zeek-aka-bro_400.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/force-directed-app-for-splunk_200.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/punchcard-custom-visualization_130.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/sankey-diagram-custom-visualization_130.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/link-analysis-app-for-splunk_161.tgz -auth 'admin:changeme'
-      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/threathunting_1492.tgz -auth 'admin:changeme'
-      
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/force-directed-app-for-splunk_310.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/punchcard-custom-visualization_150.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-sankey-diagram-custom-visualization_160.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/link-analysis-app-for-splunk_163.tgz -auth 'admin:changeme'
+      /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/threathunting_151.tgz -auth 'admin:changeme'
+
       # Fix ASNGen App - https://github.com/doksu/TA-asngen/issues/18#issuecomment-685691630
-      echo 'python.version = python2' >> /opt/splunk/etc/apps/TA-asngen/default/commands.conf
+      # Updated - https://github.com/doksu/TA-asngen/pull/19
+      # echo 'python.version = python2' >> /opt/splunk/etc/apps/TA-asngen/default/commands.conf
 
       # Install the Maxmind license key for the ASNgen App
       if [ ! -z $MAXMIND_LICENSE ]; then
-        mkdir /opt/splunk/etc/apps/TA-asngen/local 
+        mkdir /opt/splunk/etc/apps/TA-asngen/local
         cp /opt/splunk/etc/apps/TA-asngen/default/asngen.conf /opt/splunk/etc/apps/TA-asngen/local/asngen.conf
         sed -i "s/license_key =/license_key = $MAXMIND_LICENSE/g" /opt/splunk/etc/apps/TA-asngen/local/asngen.conf
       fi
@@ -299,11 +299,11 @@
   changed_when: "'The Splunk web interface is at https://logger:8000' in install_splunk.stdout"
 
 - name: Install Fleet
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
-    if [ -d "/opt/fleet" ]; then
+    if [ "systemctl is-active fleet -q" ]; then
       echo "[$(date +%H:%M:%S)]: Fleet is already installed"
     else
       cd /opt || exit 1
@@ -341,7 +341,7 @@
 
       # Install the service file
       /bin/systemctl enable fleet.service
-      /bin/systemctl start fleet.service
+      /bin/systemctl restart fleet.service
 
       # Start Fleet
       echo "[$(date +%H:%M:%S)]: Waiting for fleet service to start..."
@@ -367,11 +367,11 @@
   register: install_fleet
   changed_when: "'Updated enrollment secret' in install_fleet.stdout"
   failed_when: "'error' in install_fleet.stderr"
-  
+
 - name: Download Palantir Osquery Config
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     if [ -f /opt/osquery-configuration ]; then
       echo "[$(date +%H:%M:%S)]: osquery configs have already been downloaded"
@@ -384,9 +384,9 @@
   failed_when: "'error' in download_palantir_osquery.stderr"
 
 - name: Import osquery Config into Fleet
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     cd /opt
 
@@ -425,7 +425,7 @@
 - name: Install Velociraptor
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     echo "[$(date +%H:%M:%S)]: Installing Velociraptor..."
     mkdir /opt/velociraptor
@@ -451,11 +451,11 @@
     else
       echo "[$(date +%H:%M:%S)]: Failed to install the dpkg"
     fi
-    
+
 - name: Install Suricata
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     # Run iwr -Uri testmyids.com -UserAgent "BlackSun" in Powershell to generate test alerts from Windows
     echo "[$(date +%H:%M:%S)]: Installing Suricata..."
@@ -517,11 +517,10 @@
   register: install_suricata
   failed_when: "'error' in install_suricata.stderr"
 
-
 - name: Install Zeek
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     echo "[$(date +%H:%M:%S)]: Installing Zeek..."
     if ! grep 'zeek' /etc/apt/sources.list.d/security:zeek.list; then
@@ -531,15 +530,15 @@
     apt-key add - </tmp/Release.key &>/dev/null
 
 - name: Install Zeek Packages
-  become: yes
+  become: true
   apt:
-    name: ['zeek', 'crudini', 'python3-pip']
+    name: ["zeek", "crudini", "python3-pip"]
     update_cache: yes
 
 - name: Install Zeek Continued
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     # Environment variables
     NODECFG=/opt/zeek/etc/node.cfg
@@ -588,7 +587,7 @@
     systemctl enable zeek
     systemctl start zeek
 
-    # Configure the Splunk inputs 
+    # Configure the Splunk inputs
     mkdir -p /opt/splunk/etc/apps/Splunk_TA_bro/local && touch /opt/splunk/etc/apps/Splunk_TA_bro/local/inputs.conf
     crudini --set /opt/splunk/etc/apps/Splunk_TA_bro/local/inputs.conf monitor:///opt/zeek/spool/manager index zeek
     crudini --set /opt/splunk/etc/apps/Splunk_TA_bro/local/inputs.conf monitor:///opt/zeek/spool/manager sourcetype bro:json
@@ -608,20 +607,21 @@
   register: install_zeek
 
 - name: Install Guacamole
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
-  shell: | 
+  become: true
+  shell: |
+    if [ "systemctl is-active guacd -q" ]; then exit 1; fi
     echo "[$(date +%H:%M:%S)]: Setting up Guacamole..."
     cd /opt || exit 1
     echo "[$(date +%H:%M:%S)]: Downloading Guacamole..."
-    wget --progress=bar:force "https://apache.org/dyn/closer.lua/guacamole/1.3.0/source/guacamole-server-1.3.0.tar.gz?action=download" -O guacamole-server-1.3.0.tar.gz
-    tar -xf guacamole-server-1.3.0.tar.gz && cd guacamole-server-1.3.0 || echo "[-] Unable to find the Guacamole folder."
+    wget --progress=bar:force "https://apache.org/dyn/closer.lua/guacamole/1.5.5/source/guacamole-server-1.5.5.tar.gz?action=download" -O guacamole-server.tar.gz
+    tar -xf guacamole-server.tar.gz && cd guacamole-server-1.5.5 || echo "[-] Unable to find the Guacamole folder."
     echo "[$(date +%H:%M:%S)]: Configuring Guacamole and running 'make' and 'make install'..."
-    ./configure --with-init-dir=/etc/init.d && make --quiet &>/dev/null && make --quiet install &>/dev/null || echo "[-] An error occurred while installing Guacamole."
+    ./configure --with-init-dir=/etc/init.d && make --quiet &>/dev/null && make --quiet install &>/dev/null || echo "[-] An error occurred while installing Guacamole."; exit 1
     ldconfig
     cd /var/lib/tomcat9/webapps || echo "[-] Unable to find the tomcat9/webapps folder."
-    wget --progress=bar:force "https://apache.org/dyn/closer.lua/guacamole/1.3.0/binary/guacamole-1.3.0.war?action=download" -O guacamole.war
+    wget --progress=bar:force "https://apache.org/dyn/closer.lua/guacamole/1.5.5/binary/guacamole-1.5.5.war?action=download" -O guacamole.war
     mkdir /etc/guacamole
     mkdir /etc/guacamole/shares
     sudo chmod 777 /etc/guacamole/shares
@@ -642,13 +642,12 @@
     systemctl start tomcat9
     echo "[$(date +%H:%M:%S)]: Guacamole installation complete!"
   register: install_guacamole
+  failed_when: "'error' in install_suricata.stderr"
 
 - name: Postinstall Tasks
-  args: 
+  args:
     executable: /bin/bash
-  become: yes
+  become: true
   shell: |
     # Include Splunk and Zeek in the PATH
     echo export PATH="$PATH:/opt/splunk/bin:/opt/zeek/bin" >>~/.bashrc
-
-

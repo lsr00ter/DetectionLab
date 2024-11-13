@@ -3,7 +3,7 @@
 #Thanks to @MHaggis for this addition!
 #More information on BOTSv3 can be found at https://github.com/splunk/botsv3
 
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"
   exit 1
 fi
@@ -30,7 +30,7 @@ fi
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-cloud-services_401.tgz -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-office-365_201.tgz -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-sysmon_1062.tgz -auth 'admin:changeme'
-/opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_700.tgz -auth 'admin:changeme'
+/opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_900.tgz -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-symantec-endpoint-protection_301.tgz -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-tenable_514.tgz -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-unix-and-linux_701.tgz -auth 'admin:changeme'

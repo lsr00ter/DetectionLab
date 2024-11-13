@@ -21,7 +21,7 @@
                 " netcfg/get_domain=vm<wait>",
                 " netcfg/get_hostname=vagrant<wait>",
                 " grub-installer/bootdev=/dev/sda<wait>",
-                " preseed/url=https://ping.detectionlab.network/preseed.cfg<wait>",
+                " preseed/url=http://ping.detectionlab.network/preseed.cfg<wait>",
                 " -- <wait>",
                 "<enter><wait>"
             ],
@@ -30,13 +30,13 @@
             "CPUs": "{{ user `cpus` }}",
             "cpu_cores": 1,
             "storage": {
-            "disk_size": "{{user `disk_size`}}"
+                "disk_size": "{{user `disk_size`}}"
             },
             "network_adapters": [
-            {
-                "network": "{{ user `vcenter_network_with_dhcp_and_internet` }}",
-                "network_card": "vmxnet3"
-            }
+                {
+                    "network": "{{ user `vcenter_network_with_dhcp_and_internet` }}",
+                    "network_card": "vmxnet3"
+                }
             ],
             "guest_os_type": "ubuntu64Guest",
             "http_directory": "{{user `http_directory`}}",
@@ -55,8 +55,8 @@
             "password": "{{user `vcenter_password`}}",
             "vcenter_server": "{{user `vcenter_server`}}",
             "type": "vsphere-iso",
-            "vm_name": "detectionlab-ubuntu-2004",
-            "content_library_destination" : {
+            "vm_name": "DetectionTpl-ubuntu-2004",
+            "content_library_destination": {
                 "library": "vRA",
                 "ovf": true,
                 "destroy": true

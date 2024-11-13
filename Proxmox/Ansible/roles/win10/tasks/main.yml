@@ -32,7 +32,7 @@
   when: not dir.stat.exists
 
 - name: Copy scripts to c:\vagrant
-  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant
+  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant -Force
 
 - name: Making Windows10 Great Again
   win_shell:  .\\MakeWindows10GreatAgain.ps1
@@ -66,6 +66,3 @@
 
 - name: DetectionLab Menu
   win_shell: "\"C:\\Program Files\\Classic Shell\\ClassicStartMenu.exe -xml c:\\vagrant\\resources\\windows\\MenuSettings.xml\""
-
-
-

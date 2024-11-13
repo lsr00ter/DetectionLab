@@ -1,9 +1,11 @@
 ---
-
 - name: Hostname -> EXCHANGE
   win_hostname:
     name: EXCHANGE
   register: res
+
+- name: Install dotnet 48
+  win_shell: "cd $env:TEMP; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; irm https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/refs/heads/master/Scripts/install-dotnet-48.ps1 -OutFile install-dotnet-48.ps1; ./install-dotnet-48.ps1"
 
 - name: Reboot
   win_reboot:
@@ -32,7 +34,7 @@
   when: not dir.stat.exists
 
 - name: Copy scripts to c:\vagrant
-  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant
+  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant -Force
 
 - name: Join the Domain
   win_shell: .\\provision.ps1
@@ -71,7 +73,7 @@
 
 - name: Download ISO
   win_get_url:
-    url: 'https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso'
+    url: "https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso"
     dest: 'C:\exchange2016\ExchangeServer2016-x64-cu12.iso'
 
 - name: Ensure an ISO is mounted
@@ -82,11 +84,11 @@
 
 - name: Prepare Schema
   win_package:
-    path: '{{ disk_image_out.mount_paths[0] }}Setup.exe'
+    path: "{{ disk_image_out.mount_paths[0] }}Setup.exe"
     arguments: >-
       /IAcceptExchangeServerLicenseTerms
       /PrepareSchema
-    product_id: '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'
+    product_id: "{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}"
   vars:
     ansible_become: yes
     ansible_become_method: runas
@@ -96,12 +98,12 @@
 
 - name: Prepare AD
   win_package:
-    path: '{{ disk_image_out.mount_paths[0] }}Setup.exe'
+    path: "{{ disk_image_out.mount_paths[0] }}Setup.exe"
     arguments: >-
       /IAcceptExchangeServerLicenseTerms
       /PrepareAD
       /OrganizationName: DetectionLab
-    product_id: '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'
+    product_id: "{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}"
   vars:
     ansible_become: yes
     ansible_become_method: runas
@@ -111,12 +113,12 @@
 
 - name: Install Exchange
   win_package:
-    path: '{{ disk_image_out.mount_paths[0] }}Setup.exe'
+    path: "{{ disk_image_out.mount_paths[0] }}Setup.exe"
     arguments: >-
       /IAcceptExchangeServerLicenseTerms
       /Mode:Install
       /Role:Mailbox
-    product_id: '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'
+    product_id: "{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}"
   vars:
     ansible_become: yes
     ansible_become_method: runas
@@ -132,5 +134,4 @@
     post_reboot_delay: 60
 
 - name: Clear Event Logs
-  win_shell: "wevtutil el | Select-String -notmatch \"Microsoft-Windows-LiveId\" | Foreach-Object {wevtutil cl \"$_\"}"
-
+  win_shell: 'wevtutil el | Select-String -notmatch "Microsoft-Windows-LiveId" | Foreach-Object {wevtutil cl "$_"}'

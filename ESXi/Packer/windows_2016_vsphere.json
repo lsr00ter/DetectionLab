@@ -37,7 +37,7 @@
       "password": "{{user `vcenter_password`}}",
       "vcenter_server": "{{user `vcenter_server`}}",
       "type": "vsphere-iso",
-      "vm_name": "detectionlab-windows-server-2016",
+      "vm_name": "DetectionTpl-windows-server-2016",
       "RAM": 4096,
       "CPUs": 2,
       "network_adapters": [
@@ -49,10 +49,10 @@
       "winrm_username": "vagrant",
       "winrm_password": "vagrant",
       "winrm_timeout": "4h",
-      "content_library_destination" : {
-          "library": "vRA",
-          "ovf": true,
-          "destroy": true
+      "content_library_destination": {
+        "library": "vRA",
+        "ovf": true,
+        "destroy": true
       }
     }
   ],

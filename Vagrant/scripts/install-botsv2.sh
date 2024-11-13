@@ -5,7 +5,7 @@
 # You may also link to the full dataset which is ~12GB if you prefer.
 # More information on BOTSv2 can be found at https://github.com/splunk/botsv2
 
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"
   exit 1
 fi
@@ -19,7 +19,7 @@ fi
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-apache-web-server_100.tgz  -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-cloud-services_310.tgz  -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-iis_101.tgz  -auth 'admin:changeme'
-/opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_700.tgz  -auth 'admin:changeme'
+/opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-microsoft-windows_900.tgz  -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-symantec-endpoint-protection_230.tgz  -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/splunk-add-on-for-unix-and-linux_701.tgz  -auth 'admin:changeme'
 /opt/splunk/bin/splunk install app /vagrant/resources/splunk_server/osquery-app-for-splunk_060.tgz  -auth 'admin:changeme'

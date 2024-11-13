@@ -1,10 +1,10 @@
-if not exist "C:\Windows\Temp\7z2201-x64.msi" (
-  powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.7-zip.org/a/7z2201-x64.msi', 'C:\Windows\Temp\7z2201-x64.msi')" <NUL
+if not exist "C:\Windows\Temp\7z2301-x64.msi" (
+  powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.7-zip.org/a/7z2301-x64.msi', 'C:\Windows\Temp\7z2301-x64.msi')" <NUL
 )
-if not exist "C:\Windows\Temp\7z2201-x64.msi" (
-  powershell -Command "Start-Sleep 5; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.7-zip.org/a/7z2201-x64.msi', 'C:\Windows\Temp\7z2201-x64.msi')" <NUL
+if not exist "C:\Windows\Temp\7z2301-x64.msi" (
+  powershell -Command "Start-Sleep 5; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.7-zip.org/a/7z2301-x64.msi', 'C:\Windows\Temp\7z2301-x64.msi')" <NUL
 )
-msiexec /qb /i C:\Windows\Temp\7z2201-x64.msi
+msiexec /qb /i C:\Windows\Temp\7z2301-x64.msi
 
 if "%PACKER_BUILDER_TYPE%" equ "vmware-iso" goto :vmware
 if "%PACKER_BUILDER_TYPE%" equ "virtualbox-iso" goto :virtualbox
@@ -18,7 +18,7 @@ if exist "C:\Users\vagrant\windows.iso" (
 
 if not exist "C:\Windows\Temp\windows.iso" (
   powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://softwareupdate.vmware.com/cds/vmw-desktop/ws/15.5.5/16285975/windows/packages/tools-windows.tar', 'C:\Windows\Temp\vmware-tools.tar')" <NUL
-  cmd /c ""C:\Program Files\7-Zip\7z.exe" x C:\Windows\Temp\vmware-tools.tar -oC:\Windows\Temp"
+  cmd /c ""C:\Program Files\7-Zip\7z.exe" x C:\Windows\Temp\vmware-tools.tar -oC:\Windows\Temp -y"
   FOR /r "C:\Windows\Temp" %%a in (VMware-tools-windows-*.iso) DO REN "%%~a" "windows.iso"
   rd /S /Q "C:\Program Files (x86)\VMWare"
 )
@@ -48,4 +48,4 @@ rd /S /Q "C:\Windows\Temp\virtualbox"
 goto :done
 
 :done
-msiexec /qb /x C:\Windows\Temp\7z2201-x64.msi
+@REM msiexec /qb /x C:\Windows\Temp\7z2301-x64.msi

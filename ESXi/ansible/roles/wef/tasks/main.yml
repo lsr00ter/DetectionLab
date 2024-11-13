@@ -1,9 +1,11 @@
 ---
-
 - name: Hostname -> WEF
   win_hostname:
     name: wef
   register: res
+
+- name: Install dotnet 48
+  win_shell: "cd $env:TEMP; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; irm https://raw.githubusercontent.com/Azure/Service-Fabric-Troubleshooting-Guides/refs/heads/master/Scripts/install-dotnet-48.ps1 -OutFile install-dotnet-48.ps1; ./install-dotnet-48.ps1"
 
 - name: Reboot
   win_reboot:
@@ -34,7 +36,7 @@
   when: not dir.stat.exists
 
 - name: Copy scripts to c:\vagrant
-  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant
+  win_shell: Copy-Item -Recurse c:\DetectionLab\Vagrant c:\vagrant -Force
 
 - name: Join the Domain
   win_shell: .\\provision.ps1
@@ -53,7 +55,7 @@
     post_reboot_delay: 60
 
 - name: Clear Event Logs
-  win_shell: "wevtutil el | Select-String -notmatch \"Microsoft-Windows-LiveId\" | Foreach-Object {wevtutil cl \"$_\"}"
+  win_shell: 'wevtutil el | Select-String -notmatch "Microsoft-Windows-LiveId" | Foreach-Object {wevtutil cl "$_"}'
 
 - name: Downloading the Palantir WEF Configuration
   win_shell: ".\\download_palantir_wef.ps1"
@@ -109,19 +111,8 @@
 
 - debug: msg="{{ evtxeventsamples.stdout_lines }}"
 
-- name: Installing Microsoft Advanced Threat Analytics
-  win_shell: ".\\install-microsoft-ata.ps1"
-  args:
-    chdir: 'c:\vagrant\scripts'
-  register: windowsata
-  failed_when: "'Exception' in windowsata.stdout"
-
-- debug: msg="{{ windowsata.stdout_lines }}"
-
 - name: Configure WEF with raw Commands
   win_shell: "{{ item }}"
   with_items:
-    - "wevtutil el | Select-String -notmatch \"Microsoft-Windows-LiveId\" | Foreach-Object {wevtutil cl \"$_\"}"
+    - 'wevtutil el | Select-String -notmatch "Microsoft-Windows-LiveId" | Foreach-Object {wevtutil cl "$_"}'
     - "Set-SmbServerConfiguration -AuditSmb1Access $true -Force"
-
-
